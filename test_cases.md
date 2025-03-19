@@ -21,17 +21,16 @@ check if can cut without axe
 
 ## 一 На станке есть возможность перерабатывать деревья в доски и ускорять этот процесс за монеты.
 // TestCase4
-cut 1 tree
-goto workbench
+Context.Cheats.GetWood(1);
 open workbench
-check if have woods
-3 woods
 place woods into bench
 wait X secs
-extract both
-2 woods + 1 refined 
+check if null
+extract
 
+Context.Cheats.GetWood(1);
 place woods into bench
 use coin
 extract both
-1 woods + 2 refined
+check if null
+

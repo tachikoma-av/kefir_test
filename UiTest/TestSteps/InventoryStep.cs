@@ -21,9 +21,30 @@ public class InventoryStep : UiTestStepBase
     protected override IEnumerator OnRun()
     {
         yield return OpenInventory();
-        yield return CheckMoveItem();
-        yield return CheckDeleteItem();
-        yield return CloseInventory();
+        
+        // non-stackable, axe
+        yield return MoveItem(0,10);
+        CheckIfItemMoved(0,10);
+        
+        // stackable, gold
+        yield return MoveItem(3,11);
+        CheckIfItemMoved(3,11, 50);
+
+        // non-stackable, axe
+        yield return DeleteItem(1);
+        CheckIfDeleted(1);
+
+        // stackable, gold
+        yield return DeleteItem(11);
+        CheckIfDeleted(11);
+
+    }
+
+    private StringParam GetStringParamByIndex(int index)
+    {
+        if (index >= 0 && index <= 9) return Screens.Inventory.Cell.Pockets;
+        if (index >= 10 && index <= 24) return Screens.Inventory.Cell.Backpack;
+        throw new ArgumentOutOfRangeException(nameof(index), "Index must be between 0 and 23.");
     }
 
     private IEnumerator OpenInventory()
@@ -31,54 +52,45 @@ public class InventoryStep : UiTestStepBase
         yield return Commands.UseButtonClickCommand(Screens.Main.Button.Inventory, new ResultData<SimpleCommandResult>());
         yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
     }
-
-    // private StringParam GetStorageTypeByIndex(int index){
-    //     // 0-9 cells - Pockets, Cell 10-23 - Backpack 
-    // }
-
-    private IEnumerator CheckMoveItem()
+    private IEnumerator MoveItem(int fromIndex, int toIndex)
     {
-        var startItemLoc = Screens.Inventory.Cell.Pockets;
-        var startItemIndex = 0;
-        
-        var endItemLoc = Screens.Inventory.Cell.Backpack;
-        var endItemIndex = 10;
-        
-        // 0-9 cells - Pockets, Cell 10-23 - Backpack 
-        yield return Commands.DragAndDropCommand(startItemLoc, startItemIndex, endItemLoc, endItemIndex, new ResultData<SimpleCommandResult>());
+        yield return Commands.DragAndDropCommand(GetStringParamByIndex(fromIndex), fromIndex, GetStringParamByIndex(toIndex), toIndex, new ResultData<SimpleCommandResult>());
         yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
-
-        var startCellIsEmptyChecker = new CountIsEmptyChecker(Context, startItemLoc, startItemIndex);
-        var cell_status = startCellIsEmptyChecker.Check(); 
-        if (startCellIsEmptyChecker.Check())
-        {
-            Fail($"cell number {startItemIndex} expected to be empty after moving {cell_status}");
-        }
-        var endCellIsEmptyChecker = new CountIsEmptyChecker(Context, endItemLoc, endItemIndex);
-        if (!endCellIsEmptyChecker.Check())
-        {
-            Fail($"cell number ${endItemIndex} expected to be filled after moving");
-        }
     }
-    private IEnumerator CheckDeleteItem()
+
+    private IEnumerator DeleteItem(int index)
     {
-        var startItemLoc = Screens.Inventory.Cell.Pockets;
-        var startItemIndex = 1;
-        // 0-9 cells - Pockets, Cell 10-24 - Backpack 
-        yield return Commands.ClickCellCommand(startItemLoc, startItemIndex, new ResultData<SimpleCommandResult>());
+        yield return Commands.ClickCellCommand(GetStringParamByIndex(index), index, new ResultData<SimpleCommandResult>());
         yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
         yield return Commands.UseButtonClickCommand(Screens.Inventory.Button.Delete, new ResultData<SimpleCommandResult>());
-        var startCellIsEmptyChecker = new CountIsEmptyChecker(Context, startItemLoc, startItemIndex);
-        if (!startCellIsEmptyChecker.Check())
-        {
-            Fail($"cell number ${startItemIndex} expected to be empty after deleting");
+    }
+
+
+    private void CheckIfDeleted(int index)
+    {
+        var nonStackableStartIconEmptyChecker = new IconEmptyChecker(Context, GetStringParamByIndex(index), index);
+        if (!nonStackableStartIconEmptyChecker.Check()) {
+            Fail($"Cell number {index} expected to be empty after deleting");
         }
     }
 
-
-    private IEnumerator CloseInventory()
+    private void CheckIfItemMoved(int fromIndex, int toIndex, int? expectedCount = null)
     {
-        yield return Commands.UseButtonClickCommand(Screens.Inventory.Button.Close, new ResultData<SimpleCommandResult>());
-        yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
+        var nonStackableStartIconEmptyChecker = new IconEmptyChecker(Context, GetStringParamByIndex(fromIndex), fromIndex);
+        if (!nonStackableStartIconEmptyChecker.Check()) {
+            Fail($"Cell number {fromIndex} expected to be empty after moving");
+        }
+        var nonStackableEndIconEmptyChecker = new IconEmptyChecker(Context, GetStringParamByIndex(toIndex), toIndex);
+        if (nonStackableEndIconEmptyChecker.Check()) {
+            Fail($"Cell number {toIndex} expected to be filled after moving");
+        }
+        if (expectedCount != null){
+            var stackableEndCellCountChecker = new CellCountChecker(Context, GetStringParamByIndex(toIndex), toIndex, (int)expectedCount);
+            if (!stackableEndCellCountChecker.Check()) {
+                Fail($"Cell number {toIndex} wrong count after moving");
+            }
+        }
+
     }
+
 }

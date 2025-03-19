@@ -20,12 +20,16 @@ public class AxeStep : UiTestStepBase
 
     protected override IEnumerator OnRun()
     {
-        yield return OpenInventory();
-        yield return DeleteAxes();
-        yield return CloseInventory();
         yield return GoToFirstTree();
         yield return CutTree();
-        yield return CheckWoodCountAtInventory();
+        yield return CheckWoodCountAtInventory(4,3, "Wrong wood count after cutting 1 tree");
+
+        yield return BreakAxe();
+        yield return CheckIfAxeGotBroken();
+
+        yield return DeleteOtherAxes();
+        yield return CutTree(2);
+        yield return CheckWoodCountAtInventory(0,0, "Was able to complete cutting tree without axe in 2 cuts");
     }
 
     private IEnumerator OpenInventory()
@@ -33,10 +37,28 @@ public class AxeStep : UiTestStepBase
         yield return Commands.UseButtonClickCommand(Screens.Main.Button.Inventory, new ResultData<SimpleCommandResult>());
         yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
     }
-
-    private IEnumerator DeleteAxes()
+    private IEnumerator CloseInventory()
     {
-        for (int i = 0; i < 3; i++)
+        yield return Commands.UseButtonClickCommand(Screens.Inventory.Button.Close, new ResultData<SimpleCommandResult>());
+        yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
+    }
+
+    private IEnumerator CheckWoodCountAtInventory(int cell, int count, string failReason)
+    {
+        yield return OpenInventory();
+        var cellCountChecker = new CellCountChecker(Context, Screens.Inventory.Cell.Pockets, cell, count);
+        if (!cellCountChecker.Check())
+        {
+            Fail(failReason);
+        }
+        yield return CloseInventory();
+
+    }
+
+    private IEnumerator DeleteOtherAxes()
+    {
+        yield return OpenInventory();
+        for (int i = 1; i < 3; i++)
         {
             var startItemLoc = Screens.Inventory.Cell.Pockets;
             yield return Commands.ClickCellCommand(startItemLoc, i, new ResultData<SimpleCommandResult>());
@@ -45,7 +67,7 @@ public class AxeStep : UiTestStepBase
         
         }
         yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
-
+        yield return CloseInventory();
     }
     private IEnumerator GoToFirstTree()
     {
@@ -53,32 +75,39 @@ public class AxeStep : UiTestStepBase
         yield return Commands.PlayerMoveCommand(trees[0].transform.position, new ResultData<PlayerMoveResult>());
         yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
     }
-    private IEnumerator CutTree()
+    private IEnumerator BreakAxe()
     {
-        for (int i = 0; i < 3; i++)
+        var trees = Cheats.FindTree();
+        for (int i = 1; i < 4; i++)
+        {
+            yield return Commands.PlayerMoveCommand(trees[i].transform.position, new ResultData<PlayerMoveResult>());
+            if (i == 3){
+                yield return CutTree(1);
+            } else {
+                yield return CutTree();
+            }
+        }
+    }
+    private IEnumerator CheckIfAxeGotBroken()
+    {
+        yield return OpenInventory();
+        var nonStackableStartIconEmptyChecker = new IconEmptyChecker(Context, Screens.Inventory.Cell.Pockets, 0);
+        if (!nonStackableStartIconEmptyChecker.Check()) {
+            Fail($"Cell number {0} expected to be empty after breaking axe");
+        }
+        yield return CloseInventory();
+    }
+
+
+
+    private IEnumerator CutTree(int times = 3)
+    {
+        for (int i = 0; i < times; i++)
         {
             yield return Commands.UseButtonClickCommand(Screens.Main.Button.Use, new ResultData<SimpleCommandResult>());
             yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
         }
     }
-    private IEnumerator CheckWoodCountAtInventory()
-    {
-        yield return Commands.UseButtonClickCommand(Screens.Main.Button.Inventory, new ResultData<SimpleCommandResult>());
-        yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
 
-        var cellIsEmptyChecker = new CountIsEmptyChecker(Context, Screens.Inventory.Cell.Pockets, 0);
-        if (!cellIsEmptyChecker.Check())
-        {
-            Fail("Wrong wood count at pockets cell with index 0");
-        }
 
-        yield return Commands.UseButtonClickCommand(Screens.Inventory.Button.Close, new ResultData<SimpleCommandResult>());
-        yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
-    }
-
-    private IEnumerator CloseInventory()
-    {
-        yield return Commands.UseButtonClickCommand(Screens.Inventory.Button.Close, new ResultData<SimpleCommandResult>());
-        yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
-    }
 }
