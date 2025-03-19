@@ -312,6 +312,8 @@
     <Compile Include="UiTest\TouchInput\UiTestTouchInput.cs" />
     <Compile Include="UiTest\TestCases\TestCase2.cs" />
     <Compile Include="UiTest\TestSteps\InventoryStep.cs" />
+    <Compile Include="UiTest\TestCases\TestCase3.cs" />
+    <Compile Include="UiTest\TestSteps\AxeStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\InterfaceUiTest\InterfaceUiTestLib\InterfaceUiTestLib.csproj">

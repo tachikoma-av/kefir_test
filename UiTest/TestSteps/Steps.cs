@@ -22,5 +22,9 @@ namespace Assets.UiTest.TestSteps
         {
             return new InventoryStep();
         }
+        public IUiTestStepBase AxeStep()
+        {
+            return new AxeStep();
+        }
     }
 }
