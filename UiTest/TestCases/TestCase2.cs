@@ -11,6 +11,6 @@ public class TestCase2 : UiStepsTestCase
     protected override IEnumerator<IUiTestStepBase> Condition()
     {
         yield return Steps.WaitStartLoadingStep();
-        yield return Steps.CheckInventoryStep();
+        yield return Steps.InventoryStep();
     }
 }

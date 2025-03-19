@@ -18,7 +18,7 @@ namespace Assets.UiTest.TestSteps
         {
             return new ExampleStep();
         }
-        public IUiTestStepBase CheckInventoryStep()
+        public IUiTestStepBase InventoryStep()
         {
             return new InventoryStep();
         }
