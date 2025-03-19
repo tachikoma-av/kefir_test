@@ -26,11 +26,12 @@ open workbench
 place woods into bench
 wait X secs
 check if null
-extract
+extract both
 
 Context.Cheats.GetWood(1);
 place woods into bench
 use coin
 extract both
 check if null
+check if coins deducted
 

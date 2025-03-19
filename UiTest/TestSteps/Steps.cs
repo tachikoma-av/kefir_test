@@ -26,5 +26,9 @@ namespace Assets.UiTest.TestSteps
         {
             return new AxeStep();
         }
+        public IUiTestStepBase WorkbenchStep()
+        {
+            return new WorkbenchStep();
+        }
     }
 }

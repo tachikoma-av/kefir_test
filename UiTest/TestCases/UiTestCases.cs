@@ -12,6 +12,7 @@ namespace Assets.UiTest.Runner
             _tests.Add(1, new TestCase1());
             _tests.Add(2, new TestCase2());
             _tests.Add(3, new TestCase3());
+            _tests.Add(4, new TestCase4());
         }
 
         public IUiTestCase GetTestCase(int test)
