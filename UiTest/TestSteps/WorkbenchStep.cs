@@ -51,7 +51,7 @@ public class WorkbenchStep : UiTestStepBase
         yield return Commands.DragAndDropCommand(Screens.Inventory.Cell.WorkbenchResult, 0, Screens.Inventory.Cell.Pockets, 4, new ResultData<SimpleCommandResult>());
         yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
 
-        // check
+        // check if coins were deducted
         if (!new CellCountChecker(Context, Screens.Inventory.Cell.Pockets, 3, 45).Check()) Fail($"5 coins must be deducted");
     }
     private IEnumerator OpenWorkbench()
