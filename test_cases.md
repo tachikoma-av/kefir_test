@@ -1,32 +1,37 @@
-# auto apply
+## 一 У игрока есть инвентарь, предметы из него можно использовать и удалять. 
+// TestCase2
+open
+stackable -> move
+check if moved, no duplicate
+non-stackable -> move
+check if moved, no duplicate
 
-## installation
-- https://ollama.com/download
-- https://www.google.com/chrome/
-- `npm i`
-
-## preconfig
-
-
-## usage
-### hh.ru
-`node hh`
-### boss直招
-`node boss`
-### wellfound
-`node wellfound` 
+delete stackable
+check if empty
+delete non stackable
+check if empty
 
 
-## TODO:
-- https://wellfound.com/
-- https://www.zhipin.com/
 
+## 一 Деревья можно рубить с помощью топора. 
+// TestCase3
+check if can cut tree
+check if axe is getting destroyed after 10 uses
+check if can cut without axe
 
-## FAQ
-**Q: Can my account get banned for using this? And jow to avoid bans?**
+## 一 На станке есть возможность перерабатывать деревья в доски и ускорять этот процесс за монеты.
+// TestCase4
+cut 1 tree
+goto workbench
+open workbench
+check if have woods
+3 woods
+place woods into bench
+wait X secs
+extract both
+2 woods + 1 refined 
 
-**A:** Automation is most likely against TOS. For violating TOS, your account may get blocked. There is no way to 100% avoid bans. But I'm using it, and no bans yet, so gl. 
-
-**Q: chroimium, headless, requests?**
-
-**A:** if youre able to log in Gmail by using anything above, share some knowledge. Otherwise use default chrome with debug port on it.
+place woods into bench
+use coin
+extract both
+1 woods + 2 refined
