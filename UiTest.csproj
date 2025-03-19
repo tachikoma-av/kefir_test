@@ -310,6 +310,8 @@
     <Compile Include="UiTest\TestSteps\WaitStartLoadingStep.cs" />
     <Compile Include="UiTest\TouchInput\IUiTestTouchInput.cs" />
     <Compile Include="UiTest\TouchInput\UiTestTouchInput.cs" />
+    <Compile Include="UiTest\TestCases\TestCase2.cs" />
+    <Compile Include="UiTest\TestSteps\InventoryStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\InterfaceUiTest\InterfaceUiTestLib\InterfaceUiTestLib.csproj">
