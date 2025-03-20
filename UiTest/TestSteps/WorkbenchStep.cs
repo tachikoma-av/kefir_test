@@ -45,7 +45,7 @@ public class WorkbenchStep : UiTestStepBase
         yield return Commands.UseButtonClickCommand(Screens.Inventory.Button.Skip, new ResultData<SimpleCommandResult>());
 
         if (!new IconEmptyChecker(Context, Screens.Inventory.Cell.WorkbenchRow, 0).Check()) Fail($"WorkbenchRow must be empty after recycling with skip");
-        if (new IconEmptyChecker(Context, Screens.Inventory.Cell.WorkbenchResult, 0).Check()) Fail($"WorkbenchResult must containt smth after recycling with skip");
+        if (new IconEmptyChecker(Context, Screens.Inventory.Cell.WorkbenchResult, 0).Check()) Fail($"WorkbenchResult must contain smth after recycling with skip");
 
         // extract result
         yield return Commands.DragAndDropCommand(Screens.Inventory.Cell.WorkbenchResult, 0, Screens.Inventory.Cell.Pockets, 4, new ResultData<SimpleCommandResult>());
@@ -53,6 +53,19 @@ public class WorkbenchStep : UiTestStepBase
 
         // check if coins were deducted
         if (!new CellCountChecker(Context, Screens.Inventory.Cell.Pockets, 3, 45).Check()) Fail($"5 coins must be deducted");
+
+        Context.Cheats.GetWood(1);
+        // remove coins
+        yield return Commands.ClickCellCommand(Screens.Inventory.Cell.Pockets, 3, new ResultData<SimpleCommandResult>());
+        yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
+        yield return Commands.UseButtonClickCommand(Screens.Inventory.Button.Delete, new ResultData<SimpleCommandResult>());
+        // place another one
+        yield return Commands.DragAndDropCommand(Screens.Inventory.Cell.Pockets, 5, Screens.Inventory.Cell.WorkbenchRow, 0, new ResultData<SimpleCommandResult>());
+        yield return Commands.WaitForSecondsCommand(1, new ResultData<SimpleCommandResult>());
+        // use booster
+        yield return Commands.UseButtonClickCommand(Screens.Inventory.Button.Skip, new ResultData<SimpleCommandResult>());
+        if (new IconEmptyChecker(Context, Screens.Inventory.Cell.WorkbenchRow, 0).Check()) Fail($"WorkbenchRow must contain after recycling with skip without coin");
+        if (!new IconEmptyChecker(Context, Screens.Inventory.Cell.WorkbenchResult, 0).Check()) Fail($"WorkbenchResult must be empty after recycling with skip without coin");
     }
     private IEnumerator OpenWorkbench()
     {
